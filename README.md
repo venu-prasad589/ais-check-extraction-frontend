@@ -15,10 +15,10 @@ built from `AIS Check Extraction - Website Mockup_9.html`.
 | Route | Tab | Who |
 |---|---|---|
 | `/login` | Sign-in, and the new-password form after a temporary password | everyone |
-| `/upload` | Upload Checks: drag-and-drop PDFs, Split › OCR › Classify › Extract per file | Reviewer, Administrator |
+| `/upload` | Upload Checks: drag-and-drop PDFs, Split › OCR › Classify › Extract per file; all batches (everyone), files in Error with Retry (Administrator) | Reviewer, Administrator |
 | `/review` | Review: classification, extraction and duplicate-file items, Start Review | Reviewer, Administrator |
 | `/results` | Results: From / To calendar, status filters, search, Export Excel | Reviewer, Administrator |
-| `/dashboard` | Dashboard: totals for a date range | Reviewer, Administrator |
+| `/dashboard` | Dashboard: totals for a date range; Pipeline by stage and Processing status for Administrators | Reviewer, Administrator |
 | `/batches` | Batches, plus files in Error with Retry | Administrator |
 | `/ocr`, `/classification`, `/extraction` | Monitoring lists | Administrator |
 | `/admin` | System Admin: users, roles, temporary passwords, unlock, deactivate, settings, activity | Administrator |

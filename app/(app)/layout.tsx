@@ -10,7 +10,7 @@ import type { Role } from "@/lib/types";
 import { useApp } from "@/components/providers";
 
 const TABS:{ href: string; label: string; roles: Role[] }[] = [
-  { href: "/upload", label: "Upload Checks", roles: ["Reviewer", "Administrator"] },   // + batch history for Administrators
+  { href: "/upload", label: "Upload Checks", roles: ["Reviewer", "Administrator"] },   // + batch history (everyone), files in Error (Administrators)
   { href: "/review", label: "Review", roles: ["Reviewer", "Administrator"] },
   { href: "/ocr", label: "OCR", roles: ["Administrator"] },
   { href: "/classification", label: "Classification", roles: ["Administrator"] },

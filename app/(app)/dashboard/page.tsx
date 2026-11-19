@@ -1,18 +1,24 @@
 "use client";
-// Dashboard: totals and items waiting for review for a date range.
+// Dashboard: totals and items waiting for review for a date range (everyone). Administrators also see
+// Pipeline by stage and Processing status; the API sends those only to Administrators.
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { fmtDT, pct, rLabel, todayRange, type Range } from "@/lib/format";
 import { DateRange } from "@/components/daterange";
+import { useApp } from "@/components/providers";
 
 type C = { auto: number; pending: number; manual: number };
 interface Dash {
   files: number; errors: number; pages: number; checks: number; auto: number; manual: number; waiting: number;
-  waiting_cls: number; waiting_ext: number; queue: number; threshold: number;
-  stages: { ocr: number; classification: C; extraction: C }; last_batch: { id: string; uploaded_at: string } | null;
+  waiting_cls: number; waiting_ext: number;
+  // Administrators only
+  queue?: number; cls_threshold?: number; ext_threshold?: number;
+  stages?: { ocr: number; classification: C; extraction: C }; last_batch?: { id: string; uploaded_at: string } | null;
 }
 
 export default function DashboardPage() {
+  const { me } = useApp();
+  const admin = me?.role === "Administrator";
   const [r, setR] = useState<Range>(todayRange);
   const [d, setD] = useState<Dash | null>(null);
   useEffect(() => {
@@ -39,7 +45,7 @@ export default function DashboardPage() {
     <div className="tiles">{tiles.map(([l, v, s]) => (
       <div key={l} className="tile"><div className="eyebrow">{l}</div><div className="v num">{v}</div>{s && <div className="sub">{s}</div>}</div>
     ))}</div>
-    {d && <div className="grid2">
+    {admin && d?.stages && <div className="grid2">
       <div className="panel"><div className="panel-head"><h2>Pipeline by stage · {rLabel(r)}</h2></div>
         <div className="table-wrap"><table className="data"><thead><tr><th>Stage</th><th className="r">Auto</th><th className="r">Pending</th><th className="r">Manual</th></tr></thead><tbody>
           <tr><td>OCR <span className="faint" style={{ fontSize: 12 }}>(no review)</span></td><td className="r num">{d.stages.ocr}</td><td className="r faint">—</td><td className="r faint">—</td></tr>
@@ -52,7 +58,8 @@ export default function DashboardPage() {
           <tr><td className="muted">OCR model</td><td className="r">Nemotron OCR v2</td></tr>
           <tr><td className="muted">Classifier</td><td className="r">TF-IDF + Logistic Regression</td></tr>
           <tr><td className="muted">Extraction model</td><td className="r">Granite Vision 4.1</td></tr>
-          <tr><td className="muted">Auto-approve threshold</td><td className="r num">{pct(d.threshold)}</td></tr>
+          <tr><td className="muted">Auto-approve threshold · Classification</td><td className="r num">{pct(d.cls_threshold ?? 0)}</td></tr>
+          <tr><td className="muted">Auto-approve threshold · Extraction (each field)</td><td className="r num">{pct(d.ext_threshold ?? 0)}</td></tr>
         </tbody></table></div></div>
     </div>}
   </>);

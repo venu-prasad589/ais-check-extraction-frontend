@@ -1,9 +1,9 @@
 "use client";
 // Upload Checks (home): drag in one or many PDFs as a batch; each file shows Split > OCR > Classify > Extract.
-// Administrators also see the batch history and files in Error below (was the separate Batches tab).
+// Everyone sees the batch history below; Administrators also see files in Error with Retry (was the separate Batches tab).
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, errMsg } from "@/lib/api";
-import { fmtDT, mb, short } from "@/lib/format";
+import { mb, short } from "@/lib/format";
 import type { BatchView, FileRow } from "@/lib/types";
 import { useApp } from "@/components/providers";
 import { BatchHistory } from "@/components/batches";
@@ -16,7 +16,6 @@ const RUNNING = ["queued", "split", "ocr", "classify", "extract"];
 export default function UploadPage() {
   const { me, toast, refreshCount } = useApp();
   const [batch, setBatch] = useState<BatchView | null>(null);
-  const [last, setLast] = useState<BatchView | null>(null);
   const [rejected, setRejected] = useState<string | null>(null);
   const [over, setOver] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -29,7 +28,6 @@ export default function UploadPage() {
       try { setBatch(await api<BatchView>(`/api/batches/${id}`)); return; } catch { /* gone */ }
     }
     setBatch(null);
-    api<BatchView | null>("/api/batches/latest").then(setLast).catch(() => {});
   }, []);
   useEffect(() => { load(); }, [load]);
 
@@ -107,11 +105,9 @@ export default function UploadPage() {
           {files.map((f, i) => <FileRowView key={f.id} f={f} i={i} />)}
         </tbody></table></div>
       </div>
-    ) : last && me?.role !== "Administrator" && (
-      <div className="muted" style={{ fontSize: 13 }}>Last batch: <span className="mono">{last.id}</span> · {last.files_count} files · uploaded {fmtDT(last.uploaded_at)} by {last.uploaded_by}.</div>
-    )}
+    ) : null}
 
-    {me?.role === "Administrator" && <BatchHistory />}
+    <BatchHistory admin={me?.role === "Administrator"} />
   </>);
 }
 
