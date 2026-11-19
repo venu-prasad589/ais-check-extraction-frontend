@@ -1,11 +1,12 @@
 "use client";
 // Upload Checks (home): drag in one or many PDFs as a batch; each file shows Split > OCR > Classify > Extract.
-import Link from "next/link";
+// Administrators also see the batch history and files in Error below (was the separate Batches tab).
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, errMsg } from "@/lib/api";
 import { fmtDT, mb, short } from "@/lib/format";
 import type { BatchView, FileRow } from "@/lib/types";
 import { useApp } from "@/components/providers";
+import { BatchHistory } from "@/components/batches";
 
 const KEY = "ais-current-batch";
 const ORDER = ["split", "ocr", "classify", "extract"] as const;
@@ -94,7 +95,6 @@ export default function UploadPage() {
           <div className="muted num">{done} of {files.length} files processed{done < files.length ? " · one file at a time, in upload order" : ""}</div>
           <div className="actions">
             {!processing && <button className="btn sm" onClick={() => { try { sessionStorage.removeItem(KEY); } catch { /* */ } load(); }}>Clear</button>}
-            {me?.role === "Administrator" && <Link className="btn sm" href="/batches">View all batches</Link>}
           </div>
         </div>
         {stalled && <div className="lockbar" style={{ marginBottom: 12 }}>
@@ -107,10 +107,11 @@ export default function UploadPage() {
           {files.map((f, i) => <FileRowView key={f.id} f={f} i={i} />)}
         </tbody></table></div>
       </div>
-    ) : last && (
-      <div className="muted" style={{ fontSize: 13 }}>Last batch: <span className="mono">{last.id}</span> · {last.files_count} files · uploaded {fmtDT(last.uploaded_at)} by {last.uploaded_by}.
-        {me?.role === "Administrator" && <> <Link className="link" href="/batches">See all batches</Link></>}</div>
+    ) : last && me?.role !== "Administrator" && (
+      <div className="muted" style={{ fontSize: 13 }}>Last batch: <span className="mono">{last.id}</span> · {last.files_count} files · uploaded {fmtDT(last.uploaded_at)} by {last.uploaded_by}.</div>
     )}
+
+    {me?.role === "Administrator" && <BatchHistory />}
   </>);
 }
 

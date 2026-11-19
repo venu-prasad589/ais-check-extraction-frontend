@@ -111,6 +111,14 @@ table.res td{white-space:nowrap}
 table.res td.addr{white-space:normal;min-width:220px}
 .empty{padding:44px 16px;text-align:center;color:var(--muted)}
 .foot{font-size:12.5px;color:var(--faint);text-align:right;margin-top:10px}
+/* Settings: section tabs (Users · System settings · Developer Portal) and the heading row inside a section */
+.subtabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:-8px 0 20px;overflow-x:auto;scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
+.subtab{border:0;background:none;padding:8px 12px;margin-bottom:-1px;color:var(--muted);font-weight:500;font-size:14px;white-space:nowrap;border-bottom:2px solid transparent}
+.subtab:hover{color:var(--fg)}
+.subtab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.section-head .alert{margin:4px 0 0;color:var(--warn);font-weight:500;font-size:13.5px}
 .batch-id{font-family:var(--mono);font-size:12px;color:var(--faint)}
 
 /* badges */

@@ -2,7 +2,7 @@
 // Review: every pending classification, extraction and duplicate-file item in one list (BR-09, BR-05).
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import { fmtDT, pct, short } from "@/lib/format";
+import { fmtDT, short } from "@/lib/format";
 import type { ReviewItem } from "@/lib/types";
 import { ReviewDialog, type Target } from "@/components/review";
 
@@ -20,13 +20,6 @@ export default function ReviewPage() {
 
   const items = data?.items || [];
   const startable = items.filter((i) => !(i.lock && !i.lock.mine) && !i.queued);
-  const why = (x: ReviewItem) => {
-    if (x.type === "cls") return <>Page type unclear · best guess {x.guess} <span className="conf low">{pct(x.conf)}</span>{x.note ? <span className="muted"> · {x.note}</span> : null}</>;
-    if (x.type === "dup") return <>Same file as <span className="mono">{x.original ? short(x.original.name) : "an earlier upload"}</span> · waiting for approval to process</>;
-    if (x.queued) return <span className="muted"><span className="spin" /> {x.rerun ? "Being processed again from step 1 (MICR line not found)…" : "Being read by Granite Vision…"}</span>;
-    const parts = (x.low || []).map((l) => <span key={l.field}>{l.label} <span className="conf low">{pct(l.conf)}</span></span>);
-    return <>{parts.reduce<React.ReactNode[]>((a, p, i) => (i ? [...a, " · ", p] : [p]), [])}{x.note ? <span className="muted">{parts.length ? " · " : ""}{x.note}</span> : null}</>;
-  };
 
   return (<>
     <div className="page-head">
@@ -40,7 +33,7 @@ export default function ReviewPage() {
       ))}
     </div>
     <div className="table-wrap"><table className="data"><thead><tr>
-      <th>Review type</th><th>Batch</th><th>Processed</th><th>File</th><th className="r">Page</th><th>What needs checking</th><th />
+      <th>Review type</th><th>Batch</th><th>Processed</th><th>File</th><th className="r">Page</th><th />
     </tr></thead><tbody>
       {items.map((x) => (
         <tr key={x.type + x.id}>
@@ -49,12 +42,11 @@ export default function ReviewPage() {
           <td className="num">{fmtDT(x.processed_at)}</td>
           <td className="mono" title={x.file}>{short(x.file)}</td>
           <td className="r num">{x.page ?? "—"}</td>
-          <td style={{ fontSize: 13 }}>{why(x)}{x.lock && !x.lock.mine && <span className="faint"> · {x.lock.by} is reviewing</span>}</td>
           <td className="r"><button className="btn sm outline-accent" disabled={x.queued}
             onClick={() => setOpen({ t: { type: x.type, id: x.id }, seq: true })}>Review</button></td>
         </tr>
       ))}
-      {!items.length && <tr><td colSpan={7} className="empty">{data ? "Nothing waiting for this filter. New items appear here as files are processed." : "Loading…"}</td></tr>}
+      {!items.length && <tr><td colSpan={6} className="empty">{data ? "Nothing waiting for this filter. New items appear here as files are processed." : "Loading…"}</td></tr>}
     </tbody></table></div>
     <div className="foot">{items.length} item(s) shown</div>
     {open && <ReviewDialog start={open.t} filter={f} sequence={open.seq} onClose={() => { setOpen(null); load(); }} />}

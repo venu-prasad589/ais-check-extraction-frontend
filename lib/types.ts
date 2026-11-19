@@ -11,7 +11,7 @@ export interface FileRow {
 }
 export interface BatchView {
   id: string; uploaded_at: string; uploaded_by: string; files_count: number; pages: number; checks: number;
-  auto: number; waiting: number; errors: number; status: string; files?: FileRow[]; done?: number; worker_running?: boolean;
+  auto: number; waiting: number; errors: number; minutes?: number | null; status: string; files?: FileRow[]; done?: number; worker_running?: boolean;
 }
 
 export interface Lock { by: string; until: string; mine: boolean }

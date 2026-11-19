@@ -10,16 +10,14 @@ import type { Role } from "@/lib/types";
 import { useApp } from "@/components/providers";
 
 const TABS:{ href: string; label: string; roles: Role[] }[] = [
-  { href: "/upload", label: "Upload Checks", roles: ["Reviewer", "Administrator"] },
-  { href: "/batches", label: "Batches", roles: ["Administrator"] },
+  { href: "/upload", label: "Upload Checks", roles: ["Reviewer", "Administrator"] },   // + batch history for Administrators
   { href: "/review", label: "Review", roles: ["Reviewer", "Administrator"] },
   { href: "/ocr", label: "OCR", roles: ["Administrator"] },
   { href: "/classification", label: "Classification", roles: ["Administrator"] },
   { href: "/extraction", label: "Extraction", roles: ["Administrator"] },
   { href: "/results", label: "Results", roles: ["Reviewer", "Administrator"] },
   { href: "/dashboard", label: "Dashboard", roles: ["Reviewer", "Administrator"] },
-  { href: "/admin", label: "System Admin", roles: ["Administrator"] },
-  { href: "/developer", label: "Developer Portal", roles: ["Administrator"] },
+  { href: "/settings", label: "Settings", roles: ["Administrator"] },   // System Admin + Developer Portal
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
