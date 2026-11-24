@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, ApiError, errMsg, post } from "@/lib/api";
 import { amountWords, fmtDT, pct } from "@/lib/format";
-import { CLASSES, FIELDS, type ClsView, type ExtView, type FieldKey, type FileRow, type Lock, type ReviewItem } from "@/lib/types";
+import { CLASSES, FIELDS, OPTIONAL_FIELDS, type ClsView, type ExtView, type FieldKey, type FileRow, type Lock, type ReviewItem } from "@/lib/types";
 import { useApp } from "./providers";
 import { SmallModal, SplitModal } from "./modal";
 import { PageViewer } from "./viewer";
@@ -159,6 +159,9 @@ function ExtractDialog({ id, onHeld, next, close }: DialogProps) {
 
   const approve = async (ev: React.FormEvent) => {
     ev.preventDefault();
+    // Payor Address is optional (left empty it is saved as NULL); the other fields are required.
+    const missing = FIELDS.filter(([k]) => !OPTIONAL_FIELDS.includes(k) && !vals[k].trim()).map(([, l]) => l);
+    if (missing.length) { setErrs([`${missing.join(", ")} ${missing.length === 1 ? "is" : "are"} required.`]); return; }
     setBusy(true);
     setErrs([]);
     try { const r = await post<{ message: string }>(`/api/extractions/${id}/approve`, { values: vals }); next(r.message); }
@@ -183,7 +186,7 @@ function ExtractDialog({ id, onHeld, next, close }: DialogProps) {
         {lockMsg && <div className="lockbar">{lockMsg}</div>}
         <div className="help">{pending
           ? <>Edit any field below, then click <strong>Approve</strong>. Outlined areas on the check are the fields the model was not sure about.</>
-          : e.status === "manual" ? `Approved by ${e.reviewed_by}${e.reviewed_at ? " · " + fmtDT(e.reviewed_at) : ""}.` : "Auto-approved: all fields at or above the confidence threshold."}</div>
+          : e.status === "manual" ? `Approved by ${e.reviewed_by}${e.reviewed_at ? " · " + fmtDT(e.reviewed_at) : ""}.` : "Auto-approved: all required fields at or above the confidence threshold."}</div>
         {e.notes._general && <div className="lockbar">{e.notes._general}</div>}
         <form onSubmit={approve} noValidate style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {FIELDS.map(([k, label]) => {
@@ -191,7 +194,7 @@ function ExtractDialog({ id, onHeld, next, close }: DialogProps) {
             const corr = e.corrections?.filter((c) => c.field === k).at(-1);
             return (
               <div key={k}>
-                <div className="flab"><label htmlFor={"f_" + k}>{label}</label><span className={`conf ${isLow ? "low" : ""}`}>{pct(e.conf[k] ?? 0)}</span></div>
+                <div className="flab"><label htmlFor={"f_" + k}>{label}{OPTIONAL_FIELDS.includes(k) ? <span className="muted" style={{ fontWeight: 400 }}> (optional)</span> : " *"}</label><span className={`conf ${isLow ? "low" : ""}`}>{pct(e.conf[k] ?? 0)}</span></div>
                 <input id={"f_" + k} className={`input ${isLow ? "low" : ""}`} value={vals[k]} readOnly={!canEdit}
                   onChange={(x) => setVals((v) => ({ ...v, [k]: x.target.value }))} />
                 {isLow && e.notes[k] && <div className="notes">{e.notes[k]}</div>}

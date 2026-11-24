@@ -42,4 +42,6 @@ export const FIELDS: [FieldKey, string][] = [
   ["payor", "Payor Name"], ["address", "Payor Address"], ["pay_to", "Pay To"],
   ["check_no", "Check Number"], ["check_date", "Check Date"], ["amount", "Check Amount"],
 ];
-export const CLASSES = ["Check (front)", "Non-check", "Back of check"] as const;
+/** 24 Nov 2026: Payor Address is optional (empty = NULL); every other field is required. Same list as the API. */
+export const OPTIONAL_FIELDS: FieldKey[] = ["address"];
+export const CLASSES =["Check (front)", "Non-check", "Back of check"] as const;

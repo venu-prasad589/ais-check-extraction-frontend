@@ -1,6 +1,6 @@
 "use client";
-// Top bar with the work-queue tabs. BR-02: a Reviewer sees Upload Checks, Review, Results and
-// Dashboard only. The API checks the role again on every request, so hiding a tab is not the
+// Top bar with the work-queue tabs. BR-02: a Reviewer sees Upload Checks, Review, Extraction (since 24 Nov 2026),
+// Results and Dashboard only. The API checks the role again on every request, so hiding a tab is not the
 // only protection.
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -14,7 +14,7 @@ const TABS:{ href: string; label: string; roles: Role[] }[] = [
   { href: "/review", label: "Review", roles: ["Reviewer", "Administrator"] },
   { href: "/ocr", label: "OCR", roles: ["Administrator"] },
   { href: "/classification", label: "Classification", roles: ["Administrator"] },
-  { href: "/extraction", label: "Extraction", roles: ["Administrator"] },
+  { href: "/extraction", label: "Extraction", roles: ["Reviewer", "Administrator"] },
   { href: "/results", label: "Results", roles: ["Reviewer", "Administrator"] },
   { href: "/dashboard", label: "Dashboard", roles: ["Reviewer", "Administrator"] },
   { href: "/settings", label: "Settings", roles: ["Administrator"] },   // System Admin + Developer Portal

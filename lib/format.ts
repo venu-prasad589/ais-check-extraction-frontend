@@ -32,7 +32,14 @@ export const fmtD = (k: string) => {
   return `${+m}/${+d}/${y}`;
 };
 
-const MON3 = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+/** Check date as printed in Results: "2026-10-06" -> "10/06/2026" (MM/DD/YYYY). Plain text conversion - no time
+ *  zone, so the day never shifts. Anything that is not YYYY-MM-DD is shown as it is. */
+export const fmtCheckDate = (v: string | null | undefined) => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v ?? "");
+  return m ? `${m[2]}/${m[3]}/${m[1]}` : v ?? "";
+};
+
+const MON3 =["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 export const fmtNice = (k: string) => {
   const [y, m, d] = k.split("-").map(Number);
   return `${MON3[m - 1]} ${d}, ${y}`;

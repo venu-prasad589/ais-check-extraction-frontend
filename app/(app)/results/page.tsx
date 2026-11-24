@@ -2,7 +2,7 @@
 // Results (BR-12): the final output, one row per check, exactly the Export columns. Export Excel (BR-13).
 import { useCallback, useEffect, useState } from "react";
 import { api, download, errMsg } from "@/lib/api";
-import { fmtD, fmtDT, money, rLabel, short, todayRange, type Range } from "@/lib/format";
+import { fmtCheckDate, fmtD, fmtDT, money, rLabel, short, todayRange, type Range } from "@/lib/format";
 import type { ExtView, FieldKey } from "@/lib/types";
 import { DateRange } from "@/components/daterange";
 import { SmallModal } from "@/components/modal";
@@ -59,7 +59,7 @@ export default function ResultsPage() {
             <td className="addr" style={{ fontSize: 13, ...lo("address") }}>{e.values.address}</td>
             <td style={lo("pay_to")}>{e.values.pay_to}</td>
             <td className="num" style={lo("check_no")}>{e.values.check_no}</td>
-            <td className="num" style={lo("check_date")}>{e.values.check_date}</td>
+            <td className="num" style={lo("check_date")}>{fmtCheckDate(e.values.check_date)}</td>
             <td className="r num" style={lo("amount")}>{money(e.values.amount)}</td>
             <td><span className={`pill ${st[0]}`}>{st[1]}</span></td>
             <td className="muted">{e.reviewed_by || ""}</td><td className="num muted">{fmtDT(e.processed_at)}</td>
