@@ -6,6 +6,9 @@ export const money = (v: string | number | null | undefined) => {
   const n = Number(v);
   return v == null || v === "" || isNaN(n) ? String(v ?? "") : n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 };
+/** 26 Nov 2026: a check amount as currency text, '$6,328.24'; a value that is not a number is shown as it is. */
+export const usd = (v: string | number | null | undefined) =>
+  v == null || v === "" || isNaN(Number(v)) ? String(v ?? "") : "$" + money(v);
 
 // Business time zone: the date a file was processed in Dallas decides which day a check belongs to
 // (scope, "Processed At"). Times and "today" are shown in that zone for every user, wherever they are.

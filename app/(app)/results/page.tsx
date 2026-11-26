@@ -1,8 +1,9 @@
 "use client";
-// Results (BR-12): the final output, one row per check, exactly the Export columns. Export Excel (BR-13).
+// Results (BR-12): the final output, one row per check. Export Excel (BR-13).
+// 26 Nov 2026: Payor Address column removed from this table (all roles) and from the Excel export.
 import { useCallback, useEffect, useState } from "react";
 import { api, download, errMsg } from "@/lib/api";
-import { fmtCheckDate, fmtD, fmtDT, money, rLabel, short, todayRange, type Range } from "@/lib/format";
+import { fmtCheckDate, fmtD, fmtDT, rLabel, usd, short, todayRange, type Range } from "@/lib/format";
 import type { ExtView, FieldKey } from "@/lib/types";
 import { DateRange } from "@/components/daterange";
 import { SmallModal } from "@/components/modal";
@@ -45,7 +46,7 @@ export default function ResultsPage() {
       <input className="input" style={{ maxWidth: 280 }} placeholder="Search payor, check # or file" aria-label="Search results" value={q} onChange={(e) => setQ(e.target.value)} />
     </div>
     <div className="table-wrap"><table className="data res"><thead><tr>
-      <th>File Name</th><th className="r">Page</th><th>Payor Name</th><th>Payor Address</th><th>Pay To</th><th>Check Number</th>
+      <th>File Name</th><th className="r">Page</th><th>Payor Name</th><th>Pay To</th><th>Check Number</th>
       <th>Check Date</th><th className="r">Check Amount</th><th>Status</th><th>Reviewed By</th><th>Processed At</th>
     </tr></thead><tbody>
       {rows.map((e) => {
@@ -56,18 +57,17 @@ export default function ResultsPage() {
           <tr key={e.ext_id} onClick={pend ? () => setRev(e.ext_id) : undefined} style={pend ? { cursor: "pointer" } : undefined} title={pend ? "Open review" : undefined}>
             <td className="mono" title={e.file}>{short(e.file)}</td><td className="r num">{e.page}</td>
             <td style={lo("payor")}>{e.values.payor}</td>
-            <td className="addr" style={{ fontSize: 13, ...lo("address") }}>{e.values.address}</td>
             <td style={lo("pay_to")}>{e.values.pay_to}</td>
             <td className="num" style={lo("check_no")}>{e.values.check_no}</td>
             <td className="num" style={lo("check_date")}>{fmtCheckDate(e.values.check_date)}</td>
-            <td className="r num" style={lo("amount")}>{money(e.values.amount)}</td>
+            <td className="r num" style={lo("amount")}>{usd(e.values.amount)}</td>
             <td><span className={`pill ${st[0]}`}>{st[1]}</span></td>
             <td className="muted">{e.reviewed_by || ""}</td><td className="num muted">{fmtDT(e.processed_at)}</td>
           </tr>
         );
       })}
-      {data && !rows.length && <tr><td colSpan={11} className="empty">{all ? "No checks match this filter." : `No checks were processed on ${rLabel(r)}.`}</td></tr>}
-      {!data && <tr><td colSpan={11} className="empty">Loading…</td></tr>}
+      {data && !rows.length && <tr><td colSpan={10} className="empty">{all ? "No checks match this filter." : `No checks were processed on ${rLabel(r)}.`}</td></tr>}
+      {!data && <tr><td colSpan={10} className="empty">Loading…</td></tr>}
     </tbody></table></div>
     <div className="foot">{rows.length} of {all} check(s) · pending rows open the review screen when clicked</div>
     {rev != null && <ReviewDialog start={{ type: "ext", id: rev }} onClose={() => { setRev(null); load(); }} />}
@@ -97,7 +97,7 @@ function ExportModal({ start, onClose }: { start: Range; onClose: () => void }) 
       {info && info.pending > 0 && <div className="lockbar">{info.pending} of {info.all} checks still need review. They are included with Status “Pending review”.</div>}
       <div style={{ fontSize: 13, background: "var(--sunk)", borderRadius: 8, padding: "12px 14px", lineHeight: 1.7 }}>
         <strong>File</strong> {name}<br /><strong>Rows</strong> <span className="num">{info?.all ?? "…"}</span><br />
-        <strong>Columns</strong> File Name, Page, Payor Name, Payor Address, Pay To, Check Number, Check Date, Check Amount, Status, Reviewed By, Processed At
+        <strong>Columns</strong> File Name, Page, Payor Name, Pay To, Check Number, Check Date, Check Amount, Status, Reviewed By, Processed At
       </div>
       <div className="actions" style={{ justifyContent: "flex-end" }}>
         <button className="btn" onClick={onClose}>Cancel</button>
